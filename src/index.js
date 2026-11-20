@@ -929,7 +929,8 @@ export function index(){
                 </span>
             </span>
         </span>
-        <span class="version" id="versionLog"><a href="wiki.html#changelog" target="_blank"></a></span>
+        <span id="archipelagoStatus" class="archipelagoStatus" data-state="disconnected" role="status" aria-label="Archipelago: disconnected" title="Archipelago: disconnected"><span class="archipelagoStatusDot" aria-hidden="true"></span><span aria-hidden="true">AP</span></span>
+        <span class="version" id="clientVersion"></span><span class="version" id="versionLog"><a href="wiki.html#changelog" target="_blank"></a></span>
     </div>`);
 
     let main = $(`<div id="main" class="main"></div>`);

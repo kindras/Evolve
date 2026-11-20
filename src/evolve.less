@@ -4515,6 +4515,30 @@ span.inline {
     top: 0;
     z-index: 10;
 
+    .archipelagoStatus {
+        display: inline-flex;
+        align-items: center;
+        gap: .25rem;
+        margin-right: .75rem;
+        white-space: nowrap;
+        font-size: .75rem;
+
+        .archipelagoStatusDot {
+            width: .5rem;
+            height: .5rem;
+            border-radius: 50%;
+            background-color: #f14668;
+        }
+
+        &[data-state="connecting"] .archipelagoStatusDot {
+            background-color: #ffdd57;
+        }
+
+        &[data-state="connected"] .archipelagoStatusDot {
+            background-color: #23d160;
+        }
+    }
+
     .calendar {
         margin: 0 auto;
 

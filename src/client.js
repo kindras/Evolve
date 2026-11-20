@@ -13,6 +13,22 @@ import { races }from './races.js'
 const client = new Client();
 // client.deathLink.enableDeathlink();
 
+const archipelagoStatusLabels = {
+    connecting: "Archipelago: connecting",
+    connected: "Archipelago: connected",
+    disconnected: "Archipelago: disconnected",
+};
+function updateArchipelagoStatus(state){
+    const status = document.getElementById("archipelagoStatus");
+    if(!status)return;
+
+    const currentState=archipelagoStatusLabels[state] ? state : "disconnected";
+    const label=archipelagoStatusLabels[currentState];
+    status.dataset.state=currentState;
+    status.title=label;
+    status.setAttribute("aria-label",label);
+}
+
 var connectInfo=null;
 var gameSeed=0;
 window.addedListeners=false;
@@ -72,6 +88,7 @@ function apRandom(min, max, indexSeed) {
 export function login(user,port,pass){
     // global.settings.pause=true
 
+    updateArchipelagoStatus("connecting");
     connectInfo={
         port: port || localStorage.getItem("port") || Error,//"archipelago.gg:38281", // Default hostname
         game: "Evolve",
@@ -331,6 +348,8 @@ function connectToServer(){
     })
     .catch((error)=>{
         console.log("Failed to connect", error);
+        window.connected=false;
+        updateArchipelagoStatus("disconnected");
         let txt = (error && error.message) ? error.message : String(error);
         if (txt.includes("InvalidGame")){
             messageQueue("Game is incorrect or something!","archError",false,["all"])
@@ -339,7 +358,6 @@ function connectToServer(){
             messageQueue(`ERROR: ${txt}`,"archError",false,["all"]);
             messageQueue("Try refreshing the game and logging in again!","archError",false,["all"]);
         }
-        window.connected=false;
     });
 
 
@@ -426,6 +444,7 @@ function connectToServer(){
     const disconnectedListener = (packet) => {
         console.log("DISCONNECTED!");
         window.connected = false;
+        updateArchipelagoStatus("disconnected");
         // global.settings.pause=true;
         messageQueue("WARNING: You are disconnected! Trying to reconnect...","archError",false,["all"])
     }
@@ -588,6 +607,7 @@ function itemLocText(item){
 function onConnected(){
     //set user info
     window.connected=true;
+    updateArchipelagoStatus("connected");
     localStorage.setItem("port",connectInfo.port);
     localStorage.setItem("user",connectInfo.user);
     localStorage.setItem("game",connectInfo.game);
