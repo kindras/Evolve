@@ -22,7 +22,10 @@ import { index, mainVue, initTabs, loadTab } from './index.js';
 import { setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
-import { initChatModule, triggerDeathLink } from './client.js';
+import { login, initChatModule, triggerDeathLink } from './client.js';
+
+import { runTechr, RUN_TECHR } from '../archipelago/for_genes.js';
+import { runCreate, RUN_CREATE } from '../archipelago/create_tree_client.js';
 
 {
     $(document).ready(function() {
