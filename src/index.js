@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, message_logs, message_filters, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, alevel } from './achieve.js';
-import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
+import { vBind, initMessageQueue, renderMessage, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
@@ -998,7 +998,7 @@ export function index(){
                     let queue = $(`#msgQueueLog`);
                     clearElement(queue);
                     message_logs[filter].forEach(function (msg){
-                        queue.append($('<p class="has-text-'+msg.color+'"></p>').text(msg.msg));
+                        queue.append(renderMessage(msg.msg,msg.color));
                     });
                 }
             },
@@ -1109,7 +1109,7 @@ export function index(){
                                                 let queue = $(`#msgQueueLog`);
                                                 clearElement(queue);
                                                 message_logs[filt].forEach(function (msg){
-                                                    queue.append($('<p class="has-text-'+msg.color+'"></p>').text(msg.msg));
+                                                    queue.append(renderMessage(msg.msg,msg.color));
                                                 });
                                             }
                                         });

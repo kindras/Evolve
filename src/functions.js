@@ -361,6 +361,57 @@ export function initMessageQueue(filters){
     });
 }
 
+const archipelagoColors = {
+    black: '#000000',
+    red: '#EE0000',
+    green: '#00FF7F',
+    yellow: '#FAFAD2',
+    blue: '#6495ED',
+    magenta: '#EE00EE',
+    cyan: '#00EEEE',
+    white: '#FFFFFF',
+    slateblue: '#6D8BE8',
+    plum: '#AF99EF',
+    salmon: '#FA8072',
+    orange: '#FF7700',
+};
+
+export function renderMessage(msg,color){
+    const element = $('<p></p>').addClass(`has-text-${color}`);
+    if (!Array.isArray(msg)){
+        return element.text(msg);
+    }
+
+    msg.forEach(function (segment){
+        const span = $('<span></span>').text(segment.text);
+        if (typeof segment.color === 'string'){
+            const style = {};
+            segment.color.split(';').forEach(function (token){
+                if (token === 'bold'){
+                    style.fontWeight = 'bold';
+                }
+                else if (token === 'underline'){
+                    style.textDecoration = 'underline';
+                }
+                else if (token.endsWith('_bg')){
+                    const backgroundColor = archipelagoColors[token.slice(0, -3)];
+                    if (backgroundColor){
+                        style.backgroundColor = backgroundColor;
+                    }
+                }
+                else if (archipelagoColors[token]){
+                    style.color = archipelagoColors[token];
+                }
+            });
+            if (Object.keys(style).length){
+                span.css(style);
+            }
+        }
+        element.append(span);
+    });
+    return element;
+}
+
 export function messageQueue(msg,color,dnr,tags,reload){
     tags = tags || [];
     if (!reload && !tags.includes('all')){
@@ -370,7 +421,7 @@ export function messageQueue(msg,color,dnr,tags,reload){
     color = color || 'warning';
 
     if (tags.includes(message_logs.view)){
-        let new_message = $('<p class="has-text-'+color+'"></p>').text(msg);
+        let new_message = renderMessage(msg,color);
         $('#msgQueueLog').prepend(new_message);
         if ($('#msgQueueLog').children().length > global.settings.msgFilters[message_logs.view].max){
             $('#msgQueueLog').children().last().remove();

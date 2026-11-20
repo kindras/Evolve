@@ -478,50 +478,61 @@ function connectToServer(){
         global.itemcount = Math.max(global.itemcount, nextItemIndex);
     };
 
-    function jsonListener(text, nodes) {
+    function jsonListener(_text, nodes) {
         var hasItem=false
         var player=""
-        // console.log(nodes)
-        var stop=false
-        // var itemMessage
-        //convert nodes to text
+        var messageLines=[[]]
         for(const node of nodes){
-            var nodeTxt=node.text
-
-            if(node.type=="item"||node.type=="location"){
-            //     nodeTxt=itemLocText(node.text)
-            //     if(nodeTxt=="stop")stop=true
-                if(node.type=="item"){hasItem=true}
+            const nodeText=node.type=="location" ? itemLocText(node.text) || node.text : node.text;
+            let nodeColor;
+            if(node.type=="color"){
+                nodeColor=node.color;
             }
-            if(node.type=="player"){
-                if(node.player.slot!=client.players.self.slot){
-                    player=node.text;
+            else if(node.type=="player"){
+                const self=client.players.self;
+                nodeColor=node.player.team===self.team && node.player.slot===self.slot ? "magenta" : "yellow";
+            }
+            else if(node.type=="item"){
+                if(node.item.flags===0){nodeColor="cyan";}
+                else if(node.item.progression){nodeColor="plum";}
+                else if(node.item.useful){nodeColor="slateblue";}
+                else if(node.item.trap){nodeColor="salmon";}
+                else{nodeColor="cyan";}
+            }
+            else if(node.type=="location"){
+                nodeColor="green";
+            }
+            else if(node.type=="entrance"){
+                nodeColor="blue";
+            }
+            else if(node.part.type=="hint_status"){
+                nodeColor={
+                    0:"white",
+                    10:"slateblue",
+                    20:"salmon",
+                    30:"plum",
+                    40:"green",
+                }[node.part.hint_status] || "red";
+            }
+            const lines=nodeText.split("\n");
+            for(let i=0; i<lines.length; i++){
+                if(lines[i]){
+                    messageLines[messageLines.length-1].push({text:lines[i],color:nodeColor});
+                }
+                if(i<lines.length-1){
+                    messageLines.push([]);
                 }
             }
-            // if(node.type=="item")hasItem=true;
-            //this bit of code doesnt work because of evolve code. Imma see if i can fix that but later
-            // console.log(node.type);
-            // if(node.type=="player"){
-            //     if(node.player.slot==client.players.self.slot){
-            //         nodeTxt=`<b>${nodeTxt}</b>`;
-            //     }
-            //     else{
-            //         nodeTxt=`<i>${nodeTxt}</i>`;
-            //     }
-            // }
-            // else if(node.type=="item"){
-            //     nodeTxt=`<u>${nodeTxt}</u>`;
-            // }
-            // console.log(nodeTxt);
+            if(node.type=="item"){hasItem=true}
+            if(node.type=="player" && node.player.slot!=client.players.self.slot){
+                player=node.text;
+            }
         }
         if(hasItem&&player){
             players.push(player)
         }
-        if(stop)return
-        //make sure newlines are handled properly
-        text=text.split("\n");
-        for(const txt of text){
-            messageQueue(txt.toString(),"arch",false,["all"]);
+        for(const line of messageLines){
+            messageQueue(line,"arch",false,["all"]);
         }
 
 
