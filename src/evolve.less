@@ -4520,8 +4520,24 @@ span.inline {
         align-items: center;
         gap: .25rem;
         margin-right: .75rem;
+        padding: 0;
+        border: 0;
+        color: inherit;
+        background: transparent;
+        font: inherit;
         white-space: nowrap;
         font-size: .75rem;
+        cursor: pointer;
+
+        &:focus-visible {
+            outline: 2px solid #6495ED;
+            outline-offset: 2px;
+        }
+
+        &:disabled {
+            cursor: wait;
+            opacity: .7;
+        }
 
         .archipelagoStatusDot {
             width: .5rem;

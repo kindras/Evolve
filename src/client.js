@@ -14,9 +14,9 @@ const client = new Client();
 // client.deathLink.enableDeathlink();
 
 const archipelagoStatusLabels = {
-    connecting: "Archipelago: connecting",
-    connected: "Archipelago: connected",
-    disconnected: "Archipelago: disconnected",
+    connecting: "Connecting to Archipelago...",
+    connected: "Connected to Archipelago. Click to disconnect.",
+    disconnected: "Disconnected from Archipelago. Click to connect.",
 };
 function updateArchipelagoStatus(state){
     const status = document.getElementById("archipelagoStatus");
@@ -27,9 +27,11 @@ function updateArchipelagoStatus(state){
     status.dataset.state=currentState;
     status.title=label;
     status.setAttribute("aria-label",label);
+    status.disabled=currentState==="connecting";
 }
 
 var connectInfo=null;
+var intentionalDisconnect=false;
 var gameSeed=0;
 window.addedListeners=false;
 window.connected=false;
@@ -103,6 +105,32 @@ export function login(user,port,pass){
     window.addEventListener("beforeunload", () => {
         client.socket.disconnect();
     });
+}
+
+export function toggleArchipelagoConnection(){
+    const status=document.getElementById("archipelagoStatus");
+    if(status && status.dataset.state==="connecting"){
+        return;
+    }
+
+    if(window.connected){
+        intentionalDisconnect=true;
+        client.socket.disconnect();
+        return;
+    }
+
+    const user=localStorage.getItem("user");
+    const port=localStorage.getItem("port");
+    if(!user || !port){
+        messageQueue("No saved Archipelago login. Use !login <slot> <host:port> [password] first.","warning",false,["all"]);
+        const commandInput=document.getElementById("commandInput");
+        if(commandInput){
+            commandInput.focus();
+        }
+        return;
+    }
+
+    login(user,port,localStorage.getItem("pass") || "");
 }
 
 //dont need!
@@ -445,8 +473,13 @@ function connectToServer(){
         console.log("DISCONNECTED!");
         window.connected = false;
         updateArchipelagoStatus("disconnected");
-        // global.settings.pause=true;
-        messageQueue("WARNING: You are disconnected! Trying to reconnect...","archError",false,["all"])
+        if(intentionalDisconnect){
+            intentionalDisconnect=false;
+            messageQueue("Disconnected from Archipelago.","arch",false,["all"]);
+        }
+        else{
+            messageQueue("WARNING: Connection to Archipelago was lost.","archError",false,["all"]);
+        }
     }
     //from spineraks Yacht Dice, but disabled bcause its not needed
     const roomupdateListener = (packet) => {

@@ -14,7 +14,13 @@ import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObse
 import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
-import { setupWon } from './client.js';
+import { setupWon, toggleArchipelagoConnection } from './client.js';
+
+document.addEventListener('click',function(event){
+    if (event.target instanceof Element && event.target.closest('#archipelagoStatus')){
+        toggleArchipelagoConnection();
+    }
+});
 
 export function mainVue(){
     vBind({
@@ -929,10 +935,9 @@ export function index(){
                 </span>
             </span>
         </span>
-        <span id="archipelagoStatus" class="archipelagoStatus" data-state="disconnected" role="status" aria-label="Archipelago: disconnected" title="Archipelago: disconnected"><span class="archipelagoStatusDot" aria-hidden="true"></span><span aria-hidden="true">AP</span></span>
+        <button id="archipelagoStatus" type="button" class="archipelagoStatus" data-state="disconnected" aria-label="Disconnected from Archipelago. Click to connect." title="Disconnected from Archipelago. Click to connect."><span class="archipelagoStatusDot" aria-hidden="true"></span><span aria-hidden="true">AP</span></button>
         <span class="version" id="clientVersion"></span><span class="version" id="versionLog"><a href="wiki.html#changelog" target="_blank"></a></span>
     </div>`);
-
     let main = $(`<div id="main" class="main"></div>`);
     let columns = $(`<div class="columns is-gapless"></div>`);
     $('body').append(main);
