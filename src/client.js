@@ -460,7 +460,6 @@ function connectToServer(){
     };
 
     function jsonListener(text, nodes) {
-        var msgText=""
         var hasItem=false
         var player=""
         // console.log(nodes)
@@ -468,8 +467,8 @@ function connectToServer(){
         // var itemMessage
         //convert nodes to text
         for(const node of nodes){
-            const nodeTxt=node.text;
-            msgText += `${msgText ? " " : ""}${nodeTxt}`;
+            var nodeTxt=node.text
+
             if(node.type=="item"||node.type=="location"){
             //     nodeTxt=itemLocText(node.text)
             //     if(nodeTxt=="stop")stop=true
@@ -501,8 +500,8 @@ function connectToServer(){
         }
         if(stop)return
         //make sure newlines are handled properly
-        msgText=msgText.split("\n");
-        for(const txt of msgText){
+        text=text.split("\n");
+        for(const txt of text){
             messageQueue(txt.toString(),"arch",false,["all"]);
         }
 

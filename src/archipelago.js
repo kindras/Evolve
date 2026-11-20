@@ -806,7 +806,7 @@ class MessageManager extends EventBasedManager {
         }
       }
     }
-    const text = nodes.map((node) => node.text).join();
+    const text = nodes.map((node) => node.text).join("");
     if (this.#client.options.maximumMessages >= 1) {
       this.log.push({ text, nodes });
       this.log.splice(0, this.log.length - this.#client.options.maximumMessages);
