@@ -3,7 +3,7 @@
 import { Client } from "./archipelago.js";
 // import { Client } from "https://unpkg.com/archipelago.js/dist/archipelago.min.js";
 import { messageQueue, vBind, popover } from "./functions.js";
-import { actions, initStruct, setPlanet, runAction, actionDesc, removeAction, drawEvolution } from "./actions.js"
+import { actions, initStruct, setPlanet, runAction, actionDesc, removeAction, drawEvolution, housingLabel, structName } from "./actions.js"
 import { eventList, events } from './events.js'
 import { global, seededRandom, atrack, srSpeak } from './vars.js'
 import { incrementStruct } from './space.js'
@@ -583,37 +583,32 @@ function connectToServer(){
     }
 }
 function itemLocText(item){
-    // console.log(item,typeof item)
-    item=item.split(":")
-    if(item.length==1){
-        return item[0]
+    const parts=item.split(":");
+    if(parts.length===1){
+        return item;
     }
-    else{
-        item=[item[0].split("-"),item[1].split("_")]
-        var ids=item[0]
-        var item=item[1]
-        // console.log(ids)
-        if(ids[0]=="item"){
-            if(ids[1]=="build"){
-                return loc("city_"+item.join("_"))
-            }
-            // if(ids[1]=="tech"){
 
-            // }
-            // else if(ids[1]=="filler"){
-            //     return "stop"
-            // }
-            return "stop"//ids.join("-")+":"+item.join("_")
+    const [namespace, category]=parts[0].split("-");
+    const ids=parts.slice(1).filter(part=>part!==parts[0]).join("_");
+    if(namespace==="item"){
+        if(category==="build"){
+            return loc(`city_${ids}`);
         }
-        else if(ids[0]=="loc"){
-            if(ids[1]=="build"){
-                return loc("city_"+item.join("_"))
-            }
-            else{
-                return loc("tech_"+item.join("_"))
-            }
+        return "stop";
+    }
+    if(namespace==="loc"){
+        if(!ids){
+            return item;
+        }
+        if(category==="build"){
+            const name=ids==="basic_housing" ? housingLabel("small") : structName(ids) || loc(`city_${ids}`);
+            return loc("archipelago_build_location",[name]);
+        }
+        if(category==="tech"){
+            return `${loc("tab_research")}: ${loc(`tech_${ids}`)}`;
         }
     }
+    return item;
 }
 function onConnected(){
     //set user info

@@ -19,6 +19,7 @@
   "tab_mech": "Mech-Labor",
   "tab_shipyard": "Werft",
   "tab_research": "Forschung",
+  "archipelago_build_location": "Bauen: %0",
   "tab_resources": "Ressourcen",
   "tab_market": "Markt",
   "tab_storage": "Lager",
