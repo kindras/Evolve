@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *~
 *#
 .*
@@ -7,3 +8,5 @@ node_modules/*
 docs
 dist
 *.map
+.vite/
+*.log
