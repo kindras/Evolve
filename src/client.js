@@ -667,12 +667,14 @@ function onConnected(){
         reachedLocation(offlineLocs[i][0],offlineLocs[i][1],true)
     }
     global.offlineLocs=[]
-    Object.keys(global.tech).forEach(function(technology){
-        if(global.tech[technology]){
-            const locationId=window.locTable[`loc-tech:${technology}`];
-            if(locationId!==undefined){
-                client.check(locationId);
-            }
+    Object.keys(actions.tech).forEach(function(technology){
+        const grant=actions.tech[technology].grant;
+        if(!Array.isArray(grant) || (global.tech[grant[0]] || 0) < grant[1]){
+            return;
+        }
+        const locationId=window.locTable[`loc-tech:${technology}`];
+        if(locationId!==undefined){
+            client.check(locationId);
         }
     });
     Object.keys(global.city).forEach(function(building){
