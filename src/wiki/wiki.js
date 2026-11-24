@@ -15,6 +15,7 @@ import { eventsPage } from './events.js';
 import { arpaPage } from './arpa.js';
 import { changeLog } from './change.js';
 import { cancelSearchIndexing, search } from './search.js';
+import { archipelagoPage } from './archipelago.js';
 
 $('body').empty();
 initPage();
@@ -34,6 +35,9 @@ function initPage(){
         },
         {
             key: 'faq',
+        },
+        {
+            key: 'archipelago',
         },
         {
             key: 'gameplay',
@@ -212,6 +216,11 @@ async function menuDispatch(main,sub,frag){
 
         case 'faq':
             faqPage();
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'archipelago':
+            archipelagoPage();
             setWindowHash(main,sub,frag);
             break;
 

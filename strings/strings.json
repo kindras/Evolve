@@ -11654,5 +11654,22 @@
   "wiki_achievements_incomplete": "Incomplete",
   "wiki_achievements_completed": "Completed",
   "wiki_search_placeholder": "No results found.",
-  "wiki_search_regex_support": "RegEx Supported"
+  "wiki_search_regex_support": "RegEx Supported",
+  "wiki_menu_archipelago": "Archipelago",
+  "wiki_archipelago_overview": "Evolve on Archipelago",
+  "wiki_archipelago_overview_para1": "Archipelago is a multiworld randomizer: players connect their games to one shared session, and items are distributed across the connected worlds. Your Evolve slot can receive items found by other players, while your checks can send items to them.",
+  "wiki_archipelago_overview_para2": "Create or join an Archipelago multiworld that includes Evolve, then use the slot name, server address, port, and password provided by its host.",
+  "wiki_archipelago_locations": "Locations and checks",
+  "wiki_archipelago_locations_para1": "Evolve sends location checks when you complete supported research technologies or construct supported buildings. The check is sent to the Archipelago server automatically.",
+  "wiki_archipelago_locations_para2": "Checks reached while disconnected are saved locally and reported when you connect again. The game also syncs completed locations from your current save after connecting.",
+  "wiki_archipelago_locations_para3": "The item assigned to a location is randomized. A filler item such as a building can be placed at a research location; the location name describes what you completed, not the item you receive.",
+  "wiki_archipelago_items": "Items and options",
+  "wiki_archipelago_items_para1": "Received items are applied by Evolve and can provide buildings, resources, prestige bonuses, CRISPR effects, or traps, depending on the item.",
+  "wiki_archipelago_items_para2": "The multiworld host configures the slot options. If DeathLink is enabled for your slot, deaths can be shared with other connected games.",
+  "wiki_archipelago_connection": "Connecting to an Archipelago server",
+  "wiki_archipelago_connection_para1": "Enter the connection command in Evolve's Archipelago command input. Replace the example slot, host, port, and password with the values for your multiworld.",
+  "wiki_archipelago_connection_para2": "<code>!login PlayerName HOST:PORT</code>",
+  "wiki_archipelago_connection_para3": "If your slot name contains spaces, put it in double quotes:",
+  "wiki_archipelago_connection_para4": "<code>!login \"My Evolve Slot\" HOST:PORT PASSWORD</code>",
+  "wiki_archipelago_connection_para5": "Append PASSWORD only when the room requires one. After connecting, the AP status button shows the connection state; click it later to reconnect with saved details or disconnect. Use <code>!e help</code> for the available Evolve chat commands."
 }
