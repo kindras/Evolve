@@ -64,7 +64,7 @@ function fixReqsGrants(ELMS){
     // saveTechs(unknowns,'./archipelago/data/tech-unknowns.json');
 }
 function fixAllReqsGrants(){
-    
+
     let unknowns={};
     for(let i in ACTIONS){
 
@@ -106,10 +106,10 @@ function handleFix(elms, unknowns, grants){
     for(let elm_nm in elms){
         let elm=elms[elm_nm];
         if(hasProp(elm,'reqs')){
-            
+
             let reqs=elm['reqs'];
             let nreqs=[];
-            
+
             for(let req in reqs){
                 let nm=convGrantnm(req, reqs[req]);
 

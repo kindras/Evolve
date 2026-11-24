@@ -5225,7 +5225,7 @@ function genus_condition(r,t){
     return ((global.tech[t] && global.tech[t] === r) || (global.evolution['gselect'])) && f < 100;
 }
 
-const raceList = [
+export const raceList = [
     'human','orc','elven',
     'troll','ogre','cyclops',
     'kobold','goblin','gnome',
@@ -8440,7 +8440,7 @@ function evoExtraState(race){
     }
 }
 
-function sentience(){
+export function sentience(){
     if (global.race['simulation']){
         simulation();
     }
