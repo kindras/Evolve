@@ -14,6 +14,7 @@ import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObse
 import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
+import { setupWon } from './client.js';
 
 export function mainVue(){
     vBind({
@@ -309,6 +310,9 @@ export function initTabs(){
         loadTab(`mTabArpa`);
         loadTab(`mTabStats`);
         loadTab(`mTabObserve`);
+        if (global.settings.reachedGoal){
+            loadTab(`mTabWon`);
+        }
     }
     else {
         loadTab(global.settings.civTabs);
@@ -330,6 +334,7 @@ export function loadTab(tab){
         clearElement($(`#mTabArpa`));
         clearElement($(`#mTabStats`));
         clearElement($(`#mTabObserve`));
+        clearElement($(`#mTabWon`));
     }
     else {
         tagEvent('page_view',{ page_title: `Evolve - All Tabs` });
@@ -875,6 +880,10 @@ export function loadTab(tab){
                 tagEvent('page_view',{ page_title: `Evolve - Settings` });
             }
             break;
+        case 9:
+        case 'mTabWon':
+            setupWon();
+            break;
         case 'mTabObserve':
         default:
             if (!global.settings.tabLoad){
@@ -957,6 +966,11 @@ export function index(){
                 </div>
                 <h2 class="is-sr-only">${loc('message_filters')}</h2>
                 <div id="msgQueueFilters" class="hscroll msgQueueFilters"></div>
+                <div class="archipelagoInput">
+                    <form id="commandInpForm">
+                        <input type="text" id="commandInput" class="commandInput" placeholder="Archipelago command" aria-label="Archipelago command">
+                    </form>
+                </div>
                 <h2 class="is-sr-only">${loc('messages')}</h2>
                 <div id="msgQueueLog" aria-live="polite"></div>
             </div>
@@ -1474,6 +1488,12 @@ export function index(){
         <div id="mTabObserve"></div>
     </b-tab-item>`);
     tabs.append(observe);
+
+    let won = $(`<b-tab-item :visible="s.reachedGoal">
+        <template slot="header">{{ 'ap_win' | label }}</template>
+        <div id="mTabWon"></div>
+    </b-tab-item>`);
+    tabs.append(won);
 
     // Right Column
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);

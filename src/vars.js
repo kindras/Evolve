@@ -1318,6 +1318,52 @@ if (!global['settings']){
     };
 }
 
+if (typeof global.setupComplete === 'undefined'){
+    global.setupComplete = false;
+}
+if (!global.opts){
+    global.opts = {};
+}
+if (typeof global.opts.deathlink === 'undefined'){
+    global.opts.deathlink = false;
+}
+if (typeof global.opts.deathamn === 'undefined'){
+    global.opts.deathamn = 1;
+}
+if (typeof global.opts.deaths === 'undefined'){
+    global.opts.deaths = 0;
+}
+if (typeof global.opts.deathperc === 'undefined'){
+    global.opts.deathperc = 1;
+}
+if (typeof global.opts.goal === 'undefined'){
+    global.opts.goal = 'tier-1';
+}
+if (typeof global.ap_genus === 'undefined'){
+    global.ap_genus = 'other';
+}
+if (!Array.isArray(global.offlineLocs)){
+    global.offlineLocs = [];
+}
+if (typeof global.itemcount === 'undefined'){
+    global.itemcount = 0;
+}
+if (!global.ap_stats){
+    global.ap_stats = {
+        deathsTot: 0,
+        deathsTrig: 0,
+        deathsCaused: 0
+    };
+}
+['deathsTot', 'deathsTrig', 'deathsCaused'].forEach(function(stat){
+    if (typeof global.ap_stats[stat] === 'undefined'){
+        global.ap_stats[stat] = 0;
+    }
+});
+if (typeof global.settings.reachedGoal === 'undefined'){
+    global.settings.reachedGoal = false;
+}
+
 if (!global.settings['space']){
     global.settings['space'] = {};
 }

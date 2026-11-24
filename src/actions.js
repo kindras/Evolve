@@ -5,7 +5,7 @@ import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from 
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, cancelRituals } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, cancelRituals, setPowerGrid } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
@@ -17,6 +17,7 @@ import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
+import { reachedLocation } from './client.js';
 
 export const actions = {
     evolution: {
@@ -927,6 +928,97 @@ export const actions = {
         },
     },
     city: {
+        ap_power_bonus: {
+            id: 'city-ap_power_bonus',
+            title: loc('city_ap_power_bonus'),
+            desc(){ return `<div>${loc('city_ap_power_bonus_desc')}</div><div class="has-text-special">Archipelago Item</div>`; },
+            category: 'ap_bonus',
+            reqs: {},
+            cost: {},
+            powered(){ return -5; },
+            effect(){ return `<span>+5MW.</span>`; },
+            apInc(){
+                incrementStruct('ap_power_bonus', 'city');
+                global.city.ap_power_bonus.on++;
+                global.city.power += 5;
+            },
+            action(){
+                if (!global.settings.showPowerGrid){
+                    global.city.power = 0;
+                    global.city.powered = true;
+                    global.settings.showPowerGrid = true;
+                    setPowerGrid();
+                }
+                return -1;
+            },
+            struct(){ return { d: { count: 0, on: 0 }, p: ['ap_power_bonus', 'city'] }; },
+            switchable(){ return 'only_on'; }
+        },
+        ap_prod_bonus: {
+            id: 'city-ap_prod_bonus',
+            title: loc('city_ap_prod_bonus'),
+            desc(){ return `<div>${loc('city_ap_prod_bonus_desc', [5])}</div><div class="has-text-special">Archipelago Item</div>`; },
+            category: 'ap_bonus',
+            reqs: {},
+            cost: {},
+            effect(){ return '<span>+5% Production</span>'; },
+            action(){ return -1; },
+            struct(){ return { d: { count: 0 }, p: ['ap_prod_bonus', 'city'] }; }
+        },
+        ap_pop_bonus: {
+            id: 'city-ap_pop_bonus',
+            title: loc('city_ap_pop_bonus'),
+            desc(){
+                let citizens = $(this)[0].citizens();
+                let description = citizens > 1 ? loc('city_ap_pop_bonus_desc_plural', [citizens]) : loc('city_ap_pop_bonus_desc', [citizens]);
+                return `${description}<div class="has-text-special">Archipelago Item</div>`;
+            },
+            category: 'ap_bonus',
+            reqs: {},
+            cost: {},
+            effect(){ return loc('plus_max_resource', [$(this)[0].citizens(), loc('citizen')]); },
+            action(){ return -1; },
+            struct(){ return { d: { count: 0 }, p: ['ap_pop_bonus', 'city'] }; },
+            citizens(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] : 1; }
+        },
+        ap_power_malus: {
+            id: 'city-ap_power_malus',
+            title: loc('city_ap_power_malus'),
+            desc(){ return `<div>${loc('city_ap_power_malus_desc')}</div><div class="has-text-special">Archipelago Item</div>`; },
+            category: 'ap_malus',
+            reqs: {},
+            cost: {},
+            alwaysPower: true,
+            powered(){ return 1; },
+            effect(){ return '<span>-1MW.</span>'; },
+            apInc(){
+                incrementStruct('ap_power_malus', 'city');
+                global.city.ap_power_malus.on++;
+                global.city.power -= 1;
+            },
+            action(){
+                if (!global.settings.showPowerGrid){
+                    global.city.power = 0;
+                    global.city.powered = true;
+                    global.settings.showPowerGrid = true;
+                    setPowerGrid();
+                }
+                return -1;
+            },
+            struct(){ return { d: { count: 0, on: 0 }, p: ['ap_power_malus', 'city'] }; },
+            switchable(){ return 'only_on'; }
+        },
+        ap_prod_malus: {
+            id: 'city-ap_prod_malus',
+            title: loc('city_ap_prod_malus'),
+            desc(){ return `<div>${loc('city_ap_prod_malus_desc', [2])}</div><div class="has-text-special">Archipelago Item</div>`; },
+            category: 'ap_malus',
+            reqs: {},
+            cost: {},
+            effect(){ return '<span>-2% Production</span>'; },
+            action(){ return -1; },
+            struct(){ return { d: { count: 0 }, p: ['ap_prod_malus', 'city'] }; }
+        },
         gift: {
             id: 'city-gift',
             title: loc('city_gift'),
@@ -5157,6 +5249,8 @@ const raceList = [
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim',
     'custom','hybrid'
 ];
+const cantUseRace = ['entish','sharkin','dryad','wendigo','balorg','unicorn','shoggoth','lichen','wyvern','beholder','narwhal','bombardier','nephilim'];
+const specialGenus = ['carnivore','avian','plant','heat','angelic','fungi','demonic','synthetic','eldritch'];
 raceList.forEach(function(race){
     if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ){
         if (race === 'hybrid' && global.custom.race1.genus !== 'hybrid'){
@@ -5176,11 +5270,16 @@ raceList.forEach(function(race){
                 typeList.forEach(function(t){
                     if (global.tech[`evo_${t}`] >= 2){ typeCheck = true; }
                 });
-                 
-                return (global.race.seeded 
+                let unlocked = global.race.seeded
                     || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) 
-                    || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
-                    && typeCheck 
+                    || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1);
+                let genusAllowed = !global.setupComplete
+                    ? unlocked
+                    : !cantUseRace.includes(race)
+                        && (global.ap_genus === 'other'
+                            ? !specialGenus.includes(races[race].type)
+                            : global.ap_genus === races[race].type);
+                return genusAllowed && typeCheck
                     && global.evolution.final === 100 && !global.race['evoFinalMenu']; 
             },
             cost: {
@@ -6002,6 +6101,7 @@ function registerTech(action){
 export function gainTech(action){
     let tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
+    reachedLocation('tech', action);
     drawCity();
     drawTech();
     renderSpace();
@@ -6483,7 +6583,7 @@ export function setAction(c_action,action,type,old,prediction){
     });
 }
 
-function runAction(c_action,action,type){
+export function runAction(c_action,action,type){
     if (c_action.id === 'spcdock-launch_ship'){
         c_action.action({isQueue: false});
     }

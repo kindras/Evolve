@@ -22,6 +22,7 @@ import { index, mainVue, initTabs, loadTab } from './index.js';
 import { setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
+import { initChatModule, triggerDeathLink } from './client.js';
 
 {
     $(document).ready(function() {
@@ -177,6 +178,7 @@ else {
 }
 
 initMessageQueue();
+initChatModule();
 
 if (global.lastMsg){
     Object.keys(global.lastMsg).forEach(function (tag){
@@ -894,6 +896,14 @@ function fastLoop(){
     var global_multiplier = 1;
     let applyPlasmid = false;
     let pBonus = plasmidBonus('raw');
+    if (global.city.ap_prod_bonus && global.city.ap_prod_bonus.count){
+        breakdown.p['Global'][loc('ap_bonus')] = `${global.city.ap_prod_bonus.count * 5}%`;
+        global_multiplier *= 1 + global.city.ap_prod_bonus.count * 0.05;
+    }
+    if (global.city.ap_prod_malus && global.city.ap_prod_malus.count){
+        breakdown.p['Global'][loc('ap_malus')] = `${-global.city.ap_prod_malus.count * 2}%`;
+        global_multiplier *= 1 - global.city.ap_prod_malus.count * 0.02;
+    }
     if (global.prestige.Plasmid.count > 0 && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
         breakdown.p['Global'][loc('resource_Plasmid_name')] = (pBonus[1] * 100) + '%';
         applyPlasmid = true;
@@ -1859,7 +1869,7 @@ function fastLoop(){
 
         [
             {r:'city',s:'coal_power'},{r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'spc_hell',s:'geothermal'},{r:'spc_dwarf',s:'e_reactor'},
-            {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'},{r:'tau_gas2',s:'alien_space_station'}
+            {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'},{r:'tau_gas2',s:'alien_space_station'},{r:'city',s:'ap_power_bonus'}
         ].forEach(function(generator){
             let space = convertSpaceSector(generator.r);
             let region = generator.r === 'city' ? generator.r : space;
@@ -3859,11 +3869,13 @@ function fastLoop(){
                                 global.resource[global.race.species].amount -= starved;
                                 global.stats.starved += starved;
                                 blubberFill(starved);
+                                triggerDeathLink({cause: 'starve', count: starved});
                             }
                             else if (generated < consume / threshold){
                                 global['resource'][global.race.species].amount--;
                                 global.stats.starved++;
                                 blubberFill(1);
+                                triggerDeathLink({cause: 'starve', count: 1});
                             }
                         }
                     }
@@ -8822,6 +8834,11 @@ function midLoop(){
                 breakdown.c.Money[housingLabel('large')] = gain+'v';
             }
         }
+        if (global.city.ap_pop_bonus){
+            let pop = global.city.ap_pop_bonus.count * actions.city.ap_pop_bonus.citizens();
+            caps[global.race.species] += pop;
+            breakdown.c[global.race.species][loc('city_ap_pop_bonus')] = pop + 'v';
+        }
         if (global.eden['rectory']){
             let pop = p_on['rectory'] * actions.eden.eden_asphodel.rectory.citizens();
             caps[global.race.species] += pop;
@@ -12970,6 +12987,9 @@ function spyCaught(i){
         }
     }
     else {
+        if (!escape){
+            triggerDeathLink({cause: 'spy', count: 1, loc: govTitle(i)});
+        }
         messageQueue(loc(escape ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger',false,['spy']);
     }
 }
