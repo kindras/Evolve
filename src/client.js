@@ -403,9 +403,9 @@ function connectToServer(){
 
         if(!global.setupComplete){
             var opt=packet.slot_data;
-            prestigeMod("Plasmid",opt.plasmid,true);
-            prestigeMod("Phage",opt.phage,true);
-            prestigeMod("AntiPlasmid",opt.antip,true);
+            prestigeMod("Plasmid",Math.max(global.prestige.Plasmid.count,opt.plasmid),true);
+            prestigeMod("Phage",Math.max(global.prestige.Phage.count,opt.phage),true);
+            prestigeMod("AntiPlasmid",Math.max(global.prestige.AntiPlasmid.count,opt.antip),true);
             global.opts.deathlink=opt.deathlink==1?true:false;
             global.opts.deathamn=opt.deathamn;
             global.opts.deathperc=opt.deathperc/100;
