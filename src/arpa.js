@@ -8,8 +8,9 @@ import { govActive, defineGovernor } from './governor.js';
 import { highPopAdjust } from './prod.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
+import { drawHasCrispr } from './client.js';
 
-export function arpa(type) {
+export function arpa(type, overRide) {
     switch(type){
         case 'Physics':
             physics();
@@ -26,7 +27,7 @@ export function arpa(type) {
         case 'BloodTech':
             return bloodPool;
         case 'Crispr':
-            crispr();
+            crispr(overRide);
             break;
         case 'Blood':
             blood();
@@ -2405,12 +2406,15 @@ function bindTrait(breakdown,trait){
     breakdown.append(m_trait);
 }
 
-function crispr(){
-    if ((global.tech['genetics'] && global.tech['genetics'] > 3) || global['sim']){
+function crispr(overRide){
+    if ((global.tech['genetics'] && global.tech['genetics'] > 3) || global['sim'] || global.ap || global.ap_init || overRide){
         clearElement($('#arpaCrispr'));
         $('#arpaCrispr').append(`<div class="has-text-warning">${loc('arpa_crispr_desc')}</div>`);
         $('#arpaCrispr').append('<div id="genes"></div>');
+        $("#arpaCrispr").append('<div class="has-text-warning">How your DNA has been altered already.</div>')
+        $('#arpaCrispr').append('<div id="has_genes"></div>');
         drawGenes();
+        drawHasCrispr();
     }
 }
 

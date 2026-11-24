@@ -154,6 +154,9 @@ function prestigeMod(type,amnt,setTo){
         global.prestige[type].count+=amnt;
         global.stats[type.toLowerCase()]+=amnt;
     }
+    if ((type === "Plasmid" || type === "AntiPlasmid") && $("#genes").length){
+        drawGenes();
+    }
 }
 
 function randChoice(arr,index) {
