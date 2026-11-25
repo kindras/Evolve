@@ -17,7 +17,7 @@ import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
-import { reachedLocation } from './client.js';
+import { hasArchipelagoCheck, reachedLocation } from './client.js';
 
 export const actions = {
     evolution: {
@@ -6361,7 +6361,10 @@ export function setAction(c_action,action,type,old,prediction){
         if (prediction){ clss = ' precog'; }
         else if (c_action['aura'] && c_action.aura()){ clss = ` ${c_action.aura()}`; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action" role="link"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a role="button" v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        let locationType = action === 'tech' ? 'tech' : action === 'city' ? 'build' : null;
+        let isArchipelagoCheck = locationType !== null && hasArchipelagoCheck(locationType,type);
+        let archipelagoCheck = isArchipelagoCheck ? '<span class="archipelago-check" role="img" aria-label="Archipelago check" title="Archipelago check"><img src="evolve/archipelago-logo.svg" alt=""></span>' : '';
+        element = $(`<a class="button is-dark${cst}${clss}${isArchipelagoCheck ? ' has-archipelago-check' : ''}"${data} v-on:click="action" role="link">${archipelagoCheck}<span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a role="button" v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 

@@ -3,7 +3,7 @@
 import { Client } from "./archipelago.js";
 // import { Client } from "https://unpkg.com/archipelago.js/dist/archipelago.min.js";
 import { messageQueue, vBind, popover } from "./functions.js";
-import { actions, initStruct, setPlanet, runAction, actionDesc, removeAction, drawEvolution, housingLabel, structName } from "./actions.js"
+import { actions, initStruct, setPlanet, runAction, actionDesc, removeAction, drawEvolution, drawTech, drawCity, housingLabel, structName } from "./actions.js"
 import { eventList, events } from './events.js'
 import { global, seededRandom, atrack, srSpeak } from './vars.js'
 import { incrementStruct } from './space.js'
@@ -661,6 +661,8 @@ function onConnected(){
     window.locTable=data.locationTable
     window.ritemTable=data.reverseItemTable
     window.rlocTable=data.reverseLocationTable
+    drawTech()
+    drawCity()
     // global.settings.pause=false
 
     //handle any locations reached while offline
@@ -725,17 +727,9 @@ function itemSentListener(text, item, nodes){
     }
 }
 
-//dont think i need this! from spineraks Yacht Dice
-var missingLocations=[];
-function locationsCheckedListener(locations){
-    // console.log(locations)
-    // for (let item of locations) {
-    //     if (missingLocations.includes(item)) {
-    //         missingLocations.splice(missingLocations.indexOf(item), 1);
-    //     }
-    // }
-    // updateHighscoreAndGoal();
-
+function locationsCheckedListener(){
+    drawTech();
+    drawCity();
 }
 
 var logined=false;
@@ -989,6 +983,11 @@ export function reachedLocation(type,loc){
             client.check(locationId);
         }
     }
+}
+
+export function hasArchipelagoCheck(type, name){
+    const locationId=window.locTable[`loc-${type}:${name}`];
+    return locationId!==undefined && client.room.missingLocations.includes(locationId);
 }
 
 const stringPack={
